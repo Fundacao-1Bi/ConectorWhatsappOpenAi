@@ -1,5 +1,5 @@
 message-processor:
-  handler: src/messageProcessor.connector
+  handler: src/messageProcessor.api
   memorySize: 256
   timeout: 500
   events:
@@ -8,7 +8,7 @@ message-processor:
     BOT_CODE: ConectorExemplo
 
 verifyToken:
-  handler: src/verifyToken.connector
+  handler: src/verifyToken.api
   memorySize: 128
   timeout: 180
   events:
