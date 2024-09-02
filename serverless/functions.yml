@@ -1,0 +1,17 @@
+message-processor:
+  handler: src/messageProcessor.connector
+  memorySize: 256
+  timeout: 500
+  events:
+    - http: POST /connector/messages
+  environment:
+    BOT_CODE: ConectorExemplo
+
+verifyToken:
+  handler: src/verifyToken.connector
+  memorySize: 128
+  timeout: 180
+  events:
+    - http: GET /connector/webhook
+  environment:
+    BOT_CODE: ConectorExemplo

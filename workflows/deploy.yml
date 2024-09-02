@@ -1,0 +1,41 @@
+name: Serverless
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract branch name
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> "$GITHUB_ENV"
+        id: extract_branch
+
+      - name: Set environment prod
+        if: ${{ env.BRANCH_NAME == 'main' }}
+        run: echo "ENV=prod" >> "$GITHUB_ENV"
+
+      - name: Set environment dev
+        if: ${{ env.BRANCH_NAME == 'develop' }}
+        run: echo "ENV=develop" >> "$GITHUB_ENV"
+
+      - name: Configure AWS Credentials Action For GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Serverless CLI
+        run: npm i -g serverless@3.38.0
+      - name: Deploy serverless
+        run: serverless deploy --stage ${{ env.ENV }} --verbose --conceal

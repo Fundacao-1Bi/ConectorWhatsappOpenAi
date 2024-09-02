@@ -1,0 +1,9 @@
+STAGE: '${opt:stage, self:provider.stage}'
+
+USER_TABLE: 'conector-teste-user-${opt:stage, self:provider.stage}'
+
+META_ACCESS_TOKEN: '${ssm:/conectorTeste/exemplo/${self:provider.environment.STAGE}/meta/api/access_token}'
+META_VERIFY_TOKEN: '${ssm:/conectorTeste/exemplo/${self:provider.environment.STAGE}/meta/api/verify_token}'
+META_NUMBER_ID: '${ssm:/conectorTeste/exemplo/${self:provider.environment.STAGE}/meta/api/number_id}'
+OPENAI_ASSISTANT_ID: '${ssm:/conectorTeste/exemplo/${self:provider.environment.STAGE}/openai/api/assistant_id}'
+OPENAI_TOKEN: '${ssm:/conectorTeste/exemplo/${self:provider.environment.STAGE}/openai/api/token}'

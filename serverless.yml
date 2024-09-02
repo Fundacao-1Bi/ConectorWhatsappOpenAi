@@ -1,0 +1,40 @@
+service: conector-exemplo
+
+custom:
+  esbuild:
+    bundle: true
+    minify: false
+    target: node18
+  prune:
+    automatic: true
+    number: 3
+  enterprise:
+    collectLambdaLogs: false
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: prod
+  region: us-east-1
+  environment: ${file(serverless/environment.yml)}
+  tracing:
+    apiGateway: false
+    lambda: false
+  iamRoleStatements: ${file(serverless/iamRoles.yml)}
+  deploymentBucket:
+    name: aprendizap-serverless-deployments
+  apiGateway:
+    apiKeys:
+      - ${opt:stage, self:provider.stage}-connector-api-key
+
+resources:
+  ### DYNAMODB
+  - ${file(serverless/resources.yml)}
+
+functions:
+  # Handlers
+  - ${file(serverless/functions.yml)}
+
+plugins:
+  - serverless-esbuild
+  - serverless-prune-plugin
