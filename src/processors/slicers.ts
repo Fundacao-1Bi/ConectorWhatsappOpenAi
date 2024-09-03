@@ -38,9 +38,11 @@ Basta escrever o que você deseja ✍️`
 const processValue = async (value: { messages: any[]; contacts: any }, businessId: string) => {
   const { contacts, messages } = value;
   if (messages) {
-    for (const message of messages) {
-      await processMessages({ message, contacts });
-    }
+    await Promise.all(
+      messages.map(async (message) => {
+        await processMessages({ message, contacts });
+      })
+    );
   }
 };
 
