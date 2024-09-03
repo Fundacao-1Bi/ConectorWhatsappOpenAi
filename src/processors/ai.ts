@@ -55,7 +55,9 @@ const processAiRun = async ({
 
 export const useAI = async (user: UserSchema, text: string) => {
   const threadId = user?.threadId || (await createThread());
-  const systemClockMsg = `Relógio do Sistema: ${new Date().toLocaleString('pt-BR')}`;
+  const systemClock = new Date();
+  systemClock.setHours(systemClock.getHours() - 3); // Brasília time zone
+  const systemClockMsg = `Relógio do Sistema: ${systemClock.toLocaleString('pt-BR')}`;
   await createMessage(threadId, systemClockMsg);
   await createMessage(threadId, text);
   const run = await runAssistant(threadId);
