@@ -40,7 +40,7 @@ export const sendText = async (to: string, text: string) => {
     type: 'text',
     text: {
       preview_url: true,
-      body: text,
+      body: text.substring(0, 4090),
     },
   };
   console.log(`sending message to ${to}: ${text}`);
