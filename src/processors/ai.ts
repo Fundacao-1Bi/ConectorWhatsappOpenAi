@@ -55,6 +55,8 @@ const processAiRun = async ({
 
 export const useAI = async (user: UserSchema, text: string) => {
   const threadId = user?.threadId || (await createThread());
+  const systemClockMsg = `Relógio do Sistema: ${new Date().toLocaleString('pt-BR')}`;
+  await createMessage(threadId, systemClockMsg);
   await createMessage(threadId, text);
   const run = await runAssistant(threadId);
   const userAiUsageCount = user.aiUsageCount || 0;
