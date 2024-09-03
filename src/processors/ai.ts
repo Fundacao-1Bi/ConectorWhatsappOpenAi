@@ -20,6 +20,14 @@ const markdownToZapCorrections = (text: string) => {
   return text.replace(/\*\*/g, '*').replace(/__/g, '_').replace(/### /g, '').replace(/\\/g, '');
 };
 
+// Quando usamos rag, por vezes a OPEN AI coloca na mensagem de saída a referência a linha do arquivo que a info foi encontrada, exemplo: ...【36:0†source
+// Para evitar isso, removemos tudo que está entre colchetes
+const removeBraces = (text: string) => {
+  if (!text) return '';
+  const regex = /【[^】]*】/g;
+  return text.replace(regex, '');
+};
+
 const processAiRun = async ({
   userId,
   runId,
@@ -35,7 +43,8 @@ const processAiRun = async ({
     const thread = await listMessagesByThread(threadId);
     const message = chooseMessage(thread);
     if (message) {
-      const zapFormattedMessage = markdownToZapCorrections(message);
+      const brancesRemoved = removeBraces(message);
+      const zapFormattedMessage = markdownToZapCorrections(brancesRemoved);
       await saveToUser(userId, 'AILastMesage', zapFormattedMessage);
       await sendText(userId, zapFormattedMessage);
       return true;
