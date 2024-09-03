@@ -53,6 +53,9 @@ export const sendText = async (to: string, text: string) => {
     const response = await axios.post(META_BASE_URL, body, config);
     console.log('meta answer at retry', response.data);
   }
+  if (text.length > 4090) {
+    await sendText(to, text.substring(4090));
+  }
 };
 
 export const sendButtons = async (
