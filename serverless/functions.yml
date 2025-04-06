@@ -3,7 +3,7 @@ message-processor:
   memorySize: 256
   timeout: 500
   events:
-    - http: POST /connector/messages
+    - http: POST /connector/webhook
   environment:
     BOT_CODE: ConectorExemplo
 
