@@ -9,6 +9,7 @@ import { sleep } from '@/utils/sleep';
 import { UserSchema } from '@/models/dynamodb/schemas/userSchema';
 import { saveToUser } from '@/models/userModel';
 import { sendText } from '@/services/sendToZap';
+import { WhatsAppRecipient } from '@/services/whatsappIdentity';
 
 const chooseMessage = (thread: any) => {
   const messageObj = thread.data.find((msgObj: any) => (msgObj.role = 'assistant'));
@@ -32,10 +33,12 @@ const processAiRun = async ({
   userId,
   runId,
   threadId,
+  recipient,
 }: {
   userId: string;
   runId: string;
   threadId: string;
+  recipient: WhatsAppRecipient;
 }) => {
   const { status } = await getRunStatus(threadId, runId);
 
@@ -46,14 +49,14 @@ const processAiRun = async ({
       const brancesRemoved = removeBraces(message);
       const zapFormattedMessage = markdownToZapCorrections(brancesRemoved);
       await saveToUser(userId, 'AILastMesage', zapFormattedMessage);
-      await sendText(userId, zapFormattedMessage);
+      await sendText(recipient, zapFormattedMessage);
       return true;
     }
   }
   return false;
 };
 
-export const useAI = async (user: UserSchema, text: string) => {
+export const useAI = async (user: UserSchema, text: string, recipient: WhatsAppRecipient = user.id) => {
   const threadId = user?.threadId || (await createThread());
   const systemClock = new Date();
   systemClock.setHours(systemClock.getHours() - 3); // Brasília time zone
@@ -69,7 +72,7 @@ export const useAI = async (user: UserSchema, text: string) => {
 
   const MAX_POLLING_RETRIES = 200;
   for (let i = 0; i < MAX_POLLING_RETRIES; i++) {
-    const AiSentWithSuccess = await processAiRun({ userId: user.id, runId: run.id, threadId });
+    const AiSentWithSuccess = await processAiRun({ userId: user.id, runId: run.id, threadId, recipient });
     if (AiSentWithSuccess) {
       break;
     }
