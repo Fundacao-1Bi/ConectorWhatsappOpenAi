@@ -4,7 +4,9 @@
   "description": "Conector Open Source do Whatsapp Cloud Api com a Assistants API da Open AI, feito com ♡ pelo time do AprendiZAP da Fundação 1Bi.",
   "main": "src/messageProcessor.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit",
+    "build": "esbuild src/messageProcessor.ts src/verifyToken.ts --bundle --platform=node --target=node18 --outdir=dist"
   },
   "repository": {
     "type": "git",
@@ -22,12 +24,6 @@
     "url": "https://github.com/Fundacao-1Bi/ConectorWhatsappOpenAi/issues"
   },
   "homepage": "https://github.com/Fundacao-1Bi/ConectorWhatsappOpenAi#readme",
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
-    ]
-  },
   "dependencies": {
     "@aprendizap/aws-lambda-responses": "^1.0.1",
     "@aws-sdk/client-dynamodb": "^3.529.1",

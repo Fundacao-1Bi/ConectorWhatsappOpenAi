@@ -1,9 +1,10 @@
 import { sleep } from '@/utils/sleep';
 import axios from 'axios';
+import { recipientFields, WhatsAppRecipient } from './whatsappIdentity';
 
 const numberId = process.env.META_NUMBER_ID;
 
-const META_BASE_URL = `https://graph.facebook.com/v19.0/${numberId}/messages`;
+const META_BASE_URL = `https://graph.facebook.com/v26.0/${numberId}/messages`;
 
 const config = {
   headers: {
@@ -12,12 +13,12 @@ const config = {
   },
 };
 
-export const sendTemplate = async (to: string, templateName: string) => {
+export const sendTemplate = async (to: WhatsAppRecipient, templateName: string) => {
   const body = {
     messaging_product: 'whatsapp',
-    to,
+    ...recipientFields(to),
+    recipient_type: 'individual',
     type: 'template',
-    preview_url: true,
     template: { name: templateName, language: { code: 'pt_BR' } },
   };
   console.log(`sending template to ${to}: ${templateName}`);
@@ -32,11 +33,11 @@ export const sendTemplate = async (to: string, templateName: string) => {
   }
 };
 
-export const sendText = async (to: string, text: string) => {
+export const sendText = async (to: WhatsAppRecipient, text: string) => {
   const body = {
     messaging_product: 'whatsapp',
     recipient_type: 'individual',
-    to: to,
+    ...recipientFields(to),
     type: 'text',
     text: {
       preview_url: true,
@@ -59,7 +60,7 @@ export const sendText = async (to: string, text: string) => {
 };
 
 export const sendButtons = async (
-  to: string,
+  to: WhatsAppRecipient,
   {
     text,
     buttonTexts,
@@ -76,7 +77,7 @@ export const sendButtons = async (
   const body = {
     messaging_product: 'whatsapp',
     recipient_type: 'individual',
-    to,
+    ...recipientFields(to),
     type: 'interactive',
     interactive: {
       type: 'button',
