@@ -4,7 +4,12 @@
   "description": "Conector Open Source do Whatsapp Cloud Api com a Assistants API da Open AI, feito com ♡ pelo time do AprendiZAP da Fundação 1Bi.",
   "main": "src/messageProcessor.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit",
+    "build": "esbuild src/messageProcessor.ts src/verifyToken.ts --bundle --platform=node --target=node22 --outdir=dist",
+    "lint": "eslint jest.config.js tests/*.js plugins/*.js scripts/*.js",
+    "package:check": "node scripts/check-package.js",
+    "validate": "npm test && npm run typecheck && npm run build && npm run lint && npm run package:check"
   },
   "repository": {
     "type": "git",
@@ -22,12 +27,6 @@
     "url": "https://github.com/Fundacao-1Bi/ConectorWhatsappOpenAi/issues"
   },
   "homepage": "https://github.com/Fundacao-1Bi/ConectorWhatsappOpenAi#readme",
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
-    ]
-  },
   "dependencies": {
     "@aprendizap/aws-lambda-responses": "^1.0.1",
     "@aws-sdk/client-dynamodb": "^3.529.1",
@@ -47,11 +46,16 @@
     "eslint": "^7.3.0",
     "husky": "^6.0.0",
     "jest": "^28.1.3",
-    "serverless-esbuild": "^1.52.1",
+    "serverless-esbuild": "1.55.1",
     "serverless-prune-plugin": "^2.0.2",
     "serverless-step-functions": "^2.29.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.7.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "serverless": "3.40.0",
+    "js-yaml": "4.1.0"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }
