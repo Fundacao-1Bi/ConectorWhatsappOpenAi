@@ -1,10 +1,13 @@
 service: conector-exemplo
+frameworkVersion: '3.40.0'
+configValidationMode: error
 
 custom:
   esbuild:
     bundle: true
     minify: false
-    target: node18
+    target: node22
+    exclude: []
   prune:
     automatic: true
     number: 3
@@ -13,7 +16,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs22.x
   stage: prod
   region: us-east-1
   environment: ${file(serverless/environment.yml)}
@@ -36,5 +39,6 @@ functions:
   - ${file(serverless/functions.yml)}
 
 plugins:
+  - ./plugins/node22-runtime.js
   - serverless-esbuild
   - serverless-prune-plugin

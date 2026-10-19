@@ -20,19 +20,33 @@ registros por BSUID e não migra threads entre identidades. Essa associação ex
 um fluxo de identidade autenticado e uma migração específica. Até então, um usuário
 que passar a ocultar o telefone pode começar uma nova thread sob o BSUID.
 
-Validação local, sem envio à Meta, OpenAI ou AWS:
+### Runtime e validação
+
+Lambda, bundle, testes e workflows usam Node.js 22 (`.nvmrc`).
+O runtime `nodejs22.x` é suportado pela AWS sobre Amazon Linux 2023:
+[matriz oficial de runtimes](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html).
+O SDK AWS usado pelo código é incluído no bundle para não depender da versão
+pré-instalada no runtime.
 
 ```sh
+nvm use
 npm ci --ignore-scripts
-npm test
-npm run typecheck
-npm run build
+npm run validate
 ```
 
-Os testes simulam as dependências externas e cobrem o contrato de endereçamento,
-fragmentação, retries, botões, templates, seleção de contato e resposta da IA.
-O repositório ainda declara runtime Lambda Node.js 16 em `serverless.yml`, que
-precisa ser atualizado e validado em uma manutenção separada antes de uma nova
-implantação. O novo workflow de PR executa somente validações. O pipeline Serverless legado
-executa deploy em pushes para `main`/`develop`; publicar uma branch `codex/*` e
-abrir um PR não aciona esse deploy.
+A validação executa testes com dependências externas simuladas, typecheck, bundle,
+ESLint e empacotamento Serverless offline. O último usa valores fictícios para as
+variáveis de ambiente, não consulta SSM e verifica o runtime e a inicialização dos
+dois handlers do ZIP em Node22. Não envia mensagens à Meta/OpenAI nem acessa dados AWS.
+
+O Serverless está fixado em 3.40.0 no lockfile. Seu schema antecede Node22; o plugin
+local `plugins/node22-runtime.js` acrescenta somente `nodejs22.x` ao enum de runtimes,
+com `configValidationMode: error` preservado. A validação também comprova que um
+runtime inválido continua sendo rejeitado. Esse ajuste pode ser removido em uma
+futura migração do framework com suporte nativo ao schema Node22.
+
+O workflow de PR executa somente validações. O pipeline de pushes para
+`main`/`develop` repete as mesmas validações antes de obter credenciais e implantar.
+Publicar uma branch `codex/*` e abrir um PR não aciona deploy. O merge para `main`
+implanta em produção; o resultado do deploy e a integração real com a Meta devem
+ser verificados separadamente.
